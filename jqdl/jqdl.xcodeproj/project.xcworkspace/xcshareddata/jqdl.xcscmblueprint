@@ -1,0 +1,25 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "fa8b6adf-9477-e646-8ece-c086f97ee77c++5727",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+    "fa8b6adf-9477-e646-8ece-c086f97ee77c++5727" : {
+
+    }
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "fa8b6adf-9477-e646-8ece-c086f97ee77c++5727" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "87FD6EA0-B5DD-46B6-B912-C17B02328C05",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "fa8b6adf-9477-e646-8ece-c086f97ee77c++5727" : "%E5%AF%BC%E8%A7%88%E5%B9%B3%E5%8F%B0\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "jqdl",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "Trunk\/jqdl\/jqdl.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "http:\/\/192.168.10.2:81\/svn\/01project",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Subversion",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "fa8b6adf-9477-e646-8ece-c086f97ee77c++5727"
+    }
+  ]
+}

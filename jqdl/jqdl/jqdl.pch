@@ -1,0 +1,28 @@
+//
+//  jqdl.pch
+//  jqdl
+//
+//  Created by Stephen Chin on 15/11/20.
+//  Copyright © 2015年 Stephen Chin. All rights reserved.
+//
+
+#ifndef jqdl_pch
+#define jqdl_pch
+
+// Include any system framework and library headers here that should be included in all compilation units.
+// You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
+
+#endif /* jqdl_pch */
+
+#ifdef __OBJC__
+    #import "ACMacros.h"
+    #import "UIViewController+HUD.h"
+    #import "Client.h"
+    #import "Constants.h"
+#endif
+
+
+
+
+
+
