@@ -21,13 +21,24 @@
 #import "DetailViewController.h"
 #import <Social/Social.h>
 
+#import "FeatureViewController.h"
+#import "ChooseJqViewController.h"
+#import "LBXScanViewController.h"
+#import "Data.h"
+#import "CategoryList.h"
+#import "Feature2ViewController.h"
+
 /* this is used to create random positions around you */
 #define WT_RANDOM(startValue, endValue) ((((float) (arc4random() % ((unsigned)RAND_MAX + 1)) / RAND_MAX) * (endValue - startValue)) + startValue)
 
 static char *kWTAugmentedRealityViewController_AssociatedPoiManagerKey = "kWTARVCAMEWTP";
 static char *kWTAugmentedRealityViewController_AssociatedLocationManagerKey = "kWTARVCAMECLK";
 
-@interface ViewController () <WTArchitectViewDelegate, WTArchitectViewDebugDelegate, CLLocationManagerDelegate>
+@interface ViewController () <WTArchitectViewDelegate, WTArchitectViewDebugDelegate, CLLocationManagerDelegate>{
+    NSString *firsetParams;
+    ChooseJqViewController *jqvc;
+    CLLocation *myLocation;
+}
 
 /* Add a strong property to the main Wikitude SDK component, the WTArchitectView */
 @property (nonatomic, strong) WTArchitectView               *architectView;
@@ -61,16 +72,23 @@ static char *kWTAugmentedRealityViewController_AssociatedLocationManagerKey = "k
     id firstLocation = [locations firstObject];
     if ( firstLocation )
     {
-        CLLocation *location = (CLLocation *)firstLocation;
+        
+        
+        
+        myLocation = (CLLocation *)firstLocation;
         [manager stopUpdatingLocation];
+        
+        //加载数据
+        [self loadJqList];
+        
         manager.delegate = nil;
-        
-        [self generatePois:1 aroundLocation:location];
-        
-        WTPoiManager *poiManager = objc_getAssociatedObject(self, kWTAugmentedRealityViewController_AssociatedPoiManagerKey);
-        NSString *poisInJsonData = [poiManager convertPoiModelToJson];
-        
-        [self.architectView callJavaScript:[NSString stringWithFormat:@"World.loadPoisFromJsonData(%@)", poisInJsonData]];
+//
+//        [self generatePois:1 aroundLocation:location];
+//        
+//        WTPoiManager *poiManager = objc_getAssociatedObject(self, kWTAugmentedRealityViewController_AssociatedPoiManagerKey);
+//        NSString *poisInJsonData = [poiManager convertPoiModelToJson];
+//        
+//        [self.architectView callJavaScript:[NSString stringWithFormat:@"World.loadPoisFromJsonData(%@)", poisInJsonData]];
     }
 }
 
@@ -183,13 +201,186 @@ static char *kWTAugmentedRealityViewController_AssociatedLocationManagerKey = "k
         
         NSDictionary *views = NSDictionaryOfVariableBindings(_architectView);
         [self.view addConstraints: [NSLayoutConstraint constraintsWithVisualFormat:@"|[_architectView]|" options:0 metrics:nil views:views] ];
-        [self.view addConstraints: [NSLayoutConstraint constraintsWithVisualFormat:@"V:|[_architectView]|" options:0 metrics:nil views:views] ];
+        [self.view addConstraints: [NSLayoutConstraint constraintsWithVisualFormat:@"V:|-64-[_architectView]-49-|" options:0 metrics:nil views:views] ];
     }
     else {
         NSLog(@"This device is not supported. Show either an alert or use this class method even before presenting the view controller that manages the WTArchitectView. Error: %@", [deviceSupportError localizedDescription]);
     }
     
+    
+    //选择景区
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(chooseJq:) name:@"chooseJq" object:nil];
+    //景点详情
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showJdDetail:) name:@"showJdDetail" object:nil];
+    
+    
 }
+
+
+//进入景区列表选择
+-(void)chooseJq{
+    if (jqvc == nil) {
+        jqvc = [self.storyboard instantiateViewControllerWithIdentifier:@"ChooseJqViewController"];
+        jqvc.hidesBottomBarWhenPushed = YES;
+        
+    }
+    jqvc.categoryListId = categoryList.id;
+    [self.navigationController pushViewController:jqvc animated:YES];
+    
+}
+
+//选择景区完成
+- (void)chooseJq:(NSNotification *)text{
+    
+    
+    
+    if ([text.userInfo[@"obj"] isKindOfClass:[CategoryList class]]) {
+        categoryList = (CategoryList *)text.userInfo[@"obj"];
+        firsetParams = categoryList.urlCode;
+        NSNumber *flag = text.userInfo[@"SHOWFLAG"];
+        
+        
+        [self loadJingdian:categoryList.id showHud:[flag boolValue]];
+        
+    }
+}
+
+//加载景点列表
+-(void)loadJingdian:(NSString *)ids showHud:(BOOL)flag{
+    if (flag) {
+        [self showHudInView:self.view hint:@"加载中"];
+    }
+    
+    NSDictionary *parameters = @{@"parentId":ids};
+    [[Client defaultNetClient] POST:API_JINGDIAN_LIST param:parameters JSONModelClass:[Data class] success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        DLog(@"JSONModel: %@", responseObject);
+        Data *res = (Data *)responseObject;
+        if (res.resultcode == ResultCodeSuccess) {
+            
+//            if (jingdianDataSource==nil) {
+//                jingdianDataSource = [NSMutableArray new];
+//            }else{
+//                [jingdianDataSource removeAllObjects];
+//            }
+            
+            WTPoiManager *poiManager = objc_getAssociatedObject(self, kWTAugmentedRealityViewController_AssociatedPoiManagerKey);
+            [poiManager removeAllPois];
+            
+            NSError *error;
+            NSArray *arr = (NSArray*)res.result;
+            NSMutableArray *annotations = [NSMutableArray array];
+            for (int i = 0;i<arr.count;i++) {
+                NSDictionary *dic = arr[i];
+                error = nil;
+                CategoryList *jingdianList = [[CategoryList alloc] initWithDictionary:dic error:&error];
+                DLog(@"%@\t%@\t%f\t%f",jingdianList.id,jingdianList.name,[jingdianList.lon floatValue],[jingdianList.lat floatValue]);
+                if (error) {
+                    DLog(@"%@",error.userInfo);
+                    continue;
+                }
+                if ([jingdianList.lat floatValue] != 0 && [jingdianList.lon floatValue] != 0) {
+//                    [jingdianDataSource addObject:jingdianList];
+                    
+//                    CLLocationCoordinate2D locationCoordinate = CLLocationCoordinate2DMake([jingdianList.lat floatValue], [jingdianList.lon floatValue]);
+                    
+                    
+                    CLLocationCoordinate2D locationCoordinate = CLLocationCoordinate2DMake(myLocation.coordinate.latitude + WT_RANDOM(-0.3, 0.3), myLocation.coordinate.longitude + WT_RANDOM(-0.3, 0.3));
+                    
+                    
+                    CLLocation *location = [[CLLocation alloc] initWithCoordinate:locationCoordinate
+                                                                         altitude:0
+                                                               horizontalAccuracy:0
+                                                                 verticalAccuracy:0
+                                                                        timestamp:[NSDate date]];
+                    
+                    WTPoi *poi = [[WTPoi alloc] initWithIdentifier:i
+                                                          location:location
+                                                              name:jingdianList.name
+                                               detailedDescription:jingdianList.name];
+                    DLog(@"%@",poi.jsonRepresentation);
+                    
+                    [poiManager addPoi:poi];
+                    
+                }
+            }
+            if ([annotations count] != 0) {
+                
+            }
+            
+            
+            NSString *poisInJsonData = [poiManager convertPoiModelToJson];
+            
+            [self.architectView callJavaScript:[NSString stringWithFormat:@"World.loadPoisFromJsonData(%@)", poisInJsonData]];
+            
+            [self hideHud];
+        }else {
+            DLog(@"%@",res.reason);
+            [self hideHud];
+            [self showHint:res.reason];
+        }
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        DLog(@"Error: %@", error);
+        [self hideHud];
+        [self showHint:@"获取失败，请重试!"];
+        return;
+    }];
+}
+
+//跳转景点介绍
+- (void)showJdDetail:(NSNotification *)text{
+    //    if ([text.userInfo[@"obj"] isKindOfClass:[CustomAnnotationView class]]) {
+    //
+    //
+    //        CustomAnnotationView *anno = (CustomAnnotationView *)text.userInfo[@"obj"];
+    ////        FeatureViewController *vc = [self.storyboard instantiateViewControllerWithIdentifier:@"FeatureViewController"];
+    ////        vc.hidesBottomBarWhenPushed = YES;
+    ////        vc.categoryList = anno.categoryList;
+    //
+    //        Feature2ViewController *vc = [[Feature2ViewController alloc] init];
+    //        vc.title = anno.categoryList.name;
+    //        NSString *secondParams = anno.categoryList.urlCode;
+    //        vc.url = [NSString stringWithFormat:@"view-%@-",secondParams];
+    //        vc.hidesBottomBarWhenPushed = YES;
+    //        [self.navigationController pushViewController:vc animated:YES];
+    //    }
+}
+
+//加载景区列表 读取第一个默认加载
+-(void)loadJqList{
+    [self showHudInView:self.view hint:@"加载中"];
+    
+    NSDictionary *parameters = @{@"type":@"1"};
+    [[Client defaultNetClient] POST:API_CATEGORY_LIST param:parameters JSONModelClass:[Data class] success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        //        DLog(@"JSONModel: %@", responseObject);
+        Data *res = (Data *)responseObject;
+        if (res.resultcode == ResultCodeSuccess) {
+            
+            NSError *error;
+            NSArray *arr = (NSArray*)res.result;
+            
+            if ([arr count] > 0) {
+                error = nil;
+                categoryList = [[CategoryList alloc] initWithDictionary:[arr objectAtIndex:0] error:&error];
+                NSDictionary *dict =[[NSDictionary alloc] initWithObjectsAndKeys:categoryList,@"obj",[NSNumber numberWithBool:NO],@"SHOWFLAG", nil];
+                NSNotification *notification =[NSNotification notificationWithName:@"chooseJq" object:nil userInfo:dict];
+                [[NSNotificationCenter defaultCenter] postNotification:notification];
+            }else{
+                [self hideHud];
+                [self showHint:@"暂无景区数据"];
+            }
+        }else {
+            DLog(@"%@",res.reason);
+            [self hideHud];
+            [self showHint:res.reason];
+        }
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        DLog(@"Error: %@", error);
+        [self hideHud];
+        [self showHint:@"获取失败!"];
+        return;
+    }];
+}
+
 
 #pragma mark - Public Methods
 

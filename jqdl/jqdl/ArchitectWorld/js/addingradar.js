@@ -63,7 +63,7 @@ var World = {
 				"description": poiData[currentPlaceNr].description
 			};
             
-            //AR.logger.debug(poiData[currentPlaceNr].altitude);
+            AR.logger.debug(poiData[currentPlaceNr].name+","+poiData[currentPlaceNr].latitude+","+poiData[currentPlaceNr].longitude+","+poiData[currentPlaceNr].altitude);
             
 //            if(currentPlaceNr == 0)
 //                singlePoi.altitude = 5;
@@ -94,25 +94,6 @@ var World = {
 
 //		World.updateStatusMessage(currentPlaceNr + ' places loaded');
 	},
-    loadLinePoisFromJsonData: function loadLinePoisFromJsonDataFn(poiData) {
-        
-        
-        AR.logger.debug("loadLinePoisFromJsonData poiData.length:"+poiData.length);
-        for (var currentPlaceNr = 0; currentPlaceNr < poiData.length; currentPlaceNr++) {
-
-            var singlePoi = {
-
-                "latitude": parseFloat(poiData[currentPlaceNr].latitude),
-                "longitude": parseFloat(poiData[currentPlaceNr].longitude),
-                "altitude": parseFloat(-3000)
-
-            };
-//            AR.logger.debug("currentPlaceNr:"+currentPlaceNr);
-            World.markerList.push(new line(singlePoi));
-            AR.logger.debug("add line");
-        }
-        
-    },
 
 	// sets/updates distances of all makers so they are available way faster than calling (time-consuming) distanceToUser() method all the time
 	updateDistanceToUserValues: function updateDistanceToUserValuesFn() {
