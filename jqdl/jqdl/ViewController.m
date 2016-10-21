@@ -117,7 +117,7 @@ static char *kWTAugmentedRealityViewController_AssociatedLocationManagerKey = "k
                                                      verticalAccuracy:referenceLocation.verticalAccuracy
                                                             timestamp:referenceLocation.timestamp];
         
-        WTPoi *poi = [[WTPoi alloc] initWithIdentifier:i
+        WTPoi *poi = [[WTPoi alloc] initWithIdentifier:[NSString stringWithFormat:@"%lu",(unsigned long)i]
                                               location:location
                                                   name:poiName
                                    detailedDescription:poiDescription];
@@ -293,7 +293,7 @@ static char *kWTAugmentedRealityViewController_AssociatedLocationManagerKey = "k
                                                                  verticalAccuracy:0
                                                                         timestamp:[NSDate date]];
                     
-                    WTPoi *poi = [[WTPoi alloc] initWithIdentifier:i
+                    WTPoi *poi = [[WTPoi alloc] initWithIdentifier:jingdianList.id
                                                           location:location
                                                               name:jingdianList.name
                                                detailedDescription:jingdianList.name];
@@ -568,7 +568,7 @@ static char *kWTAugmentedRealityViewController_AssociatedLocationManagerKey = "k
 
 - (void)presentPoiDetails:(NSDictionary *)poiDetails
 {
-    NSInteger poiIdentifier = [[poiDetails objectForKey:@"id"] integerValue];
+    NSString *poiIdentifier = [poiDetails objectForKey:@"id"];
     NSString *poiName = [poiDetails objectForKey:@"title"];
     NSString *poiDescription = [poiDetails objectForKey:@"description"];
     

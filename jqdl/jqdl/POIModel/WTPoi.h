@@ -14,15 +14,15 @@
 
 @interface WTPoi : NSObject
 
-@property (nonatomic, assign) NSInteger                     identifier;
+@property (nonatomic, assign) NSString                      *identifier;
 @property (nonatomic, strong) CLLocation                    *location;
 @property (nonatomic, retain) NSString                      *name;
 @property (nonatomic, retain) NSString                      *detailedDescription;
 
 
-+ (WTPoi *)poiWithIdentifier:(NSInteger)identifier location:(CLLocation *)location name:(NSString *)name detailedDescription:(NSString *)detailedDescription;
++ (WTPoi *)poiWithIdentifier:(NSString *)identifier location:(CLLocation *)location name:(NSString *)name detailedDescription:(NSString *)detailedDescription;
 
-- (instancetype)initWithIdentifier:(NSInteger)identifier location:(CLLocation *)location name:(NSString *)name detailedDescription:(NSString *)detailedDescription;
+- (instancetype)initWithIdentifier:(NSString *)identifier location:(CLLocation *)location name:(NSString *)name detailedDescription:(NSString *)detailedDescription;
 
 
 - (NSDictionary*)jsonRepresentation;

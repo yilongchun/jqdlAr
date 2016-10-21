@@ -63,7 +63,7 @@ var World = {
 				"description": poiData[currentPlaceNr].description
 			};
             
-            AR.logger.debug(poiData[currentPlaceNr].name+","+poiData[currentPlaceNr].latitude+","+poiData[currentPlaceNr].longitude+","+poiData[currentPlaceNr].altitude);
+            AR.logger.debug(poiData[currentPlaceNr].id+","+poiData[currentPlaceNr].name+","+poiData[currentPlaceNr].latitude+","+poiData[currentPlaceNr].longitude+","+poiData[currentPlaceNr].altitude);
             
 //            if(currentPlaceNr == 0)
 //                singlePoi.altitude = 5;

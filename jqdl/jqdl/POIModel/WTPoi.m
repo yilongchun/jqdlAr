@@ -15,7 +15,7 @@
 @implementation WTPoi
 
 
-+ (WTPoi *)poiWithIdentifier:(NSInteger)identifier location:(CLLocation *)location name:(NSString *)name detailedDescription:(NSString *)detailedDescription
++ (WTPoi *)poiWithIdentifier:(NSString *)identifier location:(CLLocation *)location name:(NSString *)name detailedDescription:(NSString *)detailedDescription
 {
     WTPoi *poi = nil;
     
@@ -34,7 +34,7 @@
     return poi;
 }
 
-- (instancetype)initWithIdentifier:(NSInteger)identifier location:(CLLocation *)location name:(NSString *)name detailedDescription:(NSString *)detailedDescription
+- (instancetype)initWithIdentifier:(NSString *)identifier location:(CLLocation *)location name:(NSString *)name detailedDescription:(NSString *)detailedDescription
 {
     self = [super init];
     if (self)
@@ -52,7 +52,7 @@
 
 - (NSDictionary*)jsonRepresentation
 {
-    NSArray *poiObjects = @[@(self.identifier),
+    NSArray *poiObjects = @[self.identifier,
                             @(self.location.coordinate.latitude),
                             @(self.location.coordinate.longitude),
                             @(self.location.altitude),
