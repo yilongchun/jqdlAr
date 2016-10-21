@@ -10,6 +10,7 @@
 #import "MapViewController.h"
 #import "GonglueViewController.h"
 #import "AboutViewController.h"
+#import "ViewController.h"
 
 @interface MainTabBarController ()
 
@@ -40,7 +41,8 @@
     UIImage *img3 = [UIImage imageNamed:@"about_normal"];
     UIImage *img3_h = [UIImage imageNamed:@"about_highlight"];
     
-    MapViewController *vc1 = [self.storyboard instantiateViewControllerWithIdentifier:@"MapViewController"];
+//    MapViewController *vc1 = [self.storyboard instantiateViewControllerWithIdentifier:@"MapViewController"];
+    ViewController *vc1 = [ViewController new];
     vc1.title = @"导览";
     GonglueViewController *vc2 = [self.storyboard instantiateViewControllerWithIdentifier:@"GonglueViewController"];
     vc2.title = @"攻略";
